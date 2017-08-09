@@ -1,5 +1,7 @@
 package com.example.android.todoapp;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +16,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static android.R.id.list;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +35,19 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setAdapter(aToDoAdapter);
         etEditText = (EditText) findViewById(R.id.etEditText);
         setListViewListener();
+        //
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+                // use position to find your values
+                // to go to ShowDetailsActivity, you have to use Intent
+                Intent detailScreen = new Intent(getApplicationContext(), ToDoDetailActivity.class);
+//                detailScreen.putExtra("position", position); // pass value if needed
+//                detailScreen.putExtra("para2", para2);
+                startActivity(detailScreen);
+            }
+        });
+        //
     }
 
     private void setListViewListener() {
