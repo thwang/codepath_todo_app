@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.apache.commons.io.FileUtils;
 
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> aToDoAdapter;
     ListView lvItems;
     EditText etEditText;
+    private static final int TODO_RESULT_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +38,31 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setAdapter(aToDoAdapter);
         etEditText = (EditText) findViewById(R.id.etEditText);
         setListViewListener();
-        //
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-                // use position to find your values
-                // to go to ShowDetailsActivity, you have to use Intent
                 Intent detailScreen = new Intent(getApplicationContext(), ToDoDetailActivity.class);
-//                detailScreen.putExtra("position", position); // pass value if needed
-//                detailScreen.putExtra("para2", para2);
-                startActivity(detailScreen);
+                detailScreen.putExtra("position", position);
+                detailScreen.putExtra("currentString", todoItems.get(position));
+                startActivityForResult(detailScreen, TODO_RESULT_CODE);
             }
         });
-        //
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TODO_RESULT_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                String returnString = data.getStringExtra("editedString");
+                int position = data.getIntExtra("pos", 0);
+                todoItems.set(position, returnString);
+                aToDoAdapter.notifyDataSetChanged();
+                writeItems();
+            }
+        }
     }
 
     private void setListViewListener() {
